@@ -1,28 +1,31 @@
-import sys
-print(sys.version)
-
 import numpy as np
 from numpy import random
 
 niu = 10 # number of parents
-lam = 20 # number of children
 
 N = 5
 length = N*N
 
+def tossACoinToYourWitcher():
+    return random.randint(2)
+
+def referenceFunction():
+    return N*(1+N)/2
+
 def error(vector):
-    return abs(np.sum(vector) - N*(1+N)/2)  #funkcja obliczająca wielkość błędu
+    #return abs(np.sum(vector) - N*(1+N)/2)  #funkcja obliczająca wielkość błędu
+    if sum(vector) == referenceFunction():
+        return 1
+    return 0
 
 def error2Prob(a):          #funkcja zmieniająca wielkość błędu na wagę bycia wybranym
-    return np.exp(-a)       #TO NALEZY USTALIC !!! od tego zależy siła selekcji
+    return np.exp(a)       #TO NALEZY USTALIC !!! od tego zależy siła selekcji
 
-def diff2Prob(a):
-    return np.exp(-a)
 
 class subject:
     def __init__(self):
         self.array = [0] * length
-        self.array = [random.randint(9) for x in self.array]
+        self.array = [random.randint(low = 1, high = N*N+1) for x in self.array]
         self.updateMatrix()
         self.calculateError()
 
@@ -49,7 +52,7 @@ class subject:
 class population:
     def __init__(self):
         self.parents = []
-        self.children = [] * lam
+        self.children = [] * niu
         for i in range(niu):
             self.parents.append(subject())
         self.calculateAllErrors()
@@ -58,7 +61,7 @@ class population:
         for x in self.parents:
             x.calculateError()
     
-    def findMales(self):                #wybieramy meskich rodzicow dla dzieci, Stworzy lam Male'ów
+    def findMales(self):                #wybieramy meskich rodzicow dla dzieci, Stworzy niu Male'ów
         self.calculateAllErrors()
         probabilities = []
         prob_sum=0
@@ -67,27 +70,57 @@ class population:
         for x in self.parents:
             probabilities.append(error2Prob(x.error)/prob_sum)
 
-        maleVector = np.random.choice(self.parents, size = lam, p=probabilities)  
+        maleVector = np.random.choice(self.parents, size = niu, p=probabilities)  
         return maleVector
     
-    def findFemales(self, maleVector):
-        femaleVector=[]
-        for x in maleVector:
-            differenceMeasure=[]
-            for y in self.parents:          #bedziemy wybierać 1 partnerke dla każego Male'a
-                differenceMeasure.append(sum(np.absolute(x.array - y.array))
-                weights = diff2Prob(differenceMeasure)
-                probabilitiesOfFemale = weights/sum(weights)
-            femaleVector.append(np.random.choice(self.parents, p=probabilitiesOfFemale))
+    # def findFemales(self, maleVector):
+    #     femaleVector=[]
+    #     for x in maleVector:
+    #         differenceMeasure=[]
+    #         for y in self.parents:          #bedziemy wybierać 1 partnerke dla każdego Male'a
+    #             differenceMeasure.append(sum(np.absolute(x.array - y.array))
+    #             weights = diff2Prob(differenceMeasure)
+    #             probabilitiesOfFemale = weights/sum(weights)
+    #         femaleVector.append(np.random.choice(self.parents, p=probabilitiesOfFemale))
 
-        return femaleVector
+    #     return femaleVector
 
-    def cross(self, male, female):
-        itsBoy = np.rint((male.array + female.array)/2)
-        return itsBoy
+    def cross(self, male, female, cuts=1): #Krzyżuje jedną parę
+        itsGirl=[]
+        itsBoy=[]
+        allCutPlaces=np.arange(start=1, stop=length-1)
+        chosenCutPlaces=np.random.choice(allCutPlaces, size=cuts, replace=False)
+        chosenCutPlaces.sort() #domyslnie rosnąco
 
-    def createChildren(self):  #Krzyżowanie
+        for i in range(cuts):
+            if i == 0:
+                if tossACoinToYourWitcher == 0:
+                    itsGirl += female.array[0:chosenCutPlaces[i]]
+                    itsBoy += male.array[0:chosenCutPlaces[i]]
+                else:
+                    itsGirl += male.array[0:chosenCutPlaces[i]]
+                    itsBoy += female.array[0:chosenCutPlaces[i]]
+            else:
+                if tossACoinToYourWitcher == 0:
+                    itsGirl += female.array[chosenCutPlaces[i-1]:chosenCutPlaces[i]]
+                    itsBoy += male.array[chosenCutPlaces[i-1]:chosenCutPlaces[i]]
+                else:
+                    itsGirl += male.array[chosenCutPlaces[i-1]:chosenCutPlaces[i]]
+                    itsBoy += female.array[chosenCutPlaces[i-1]:chosenCutPlaces[i]]
+
+
+        male.array = itsBoy
+        female.array = itsGirl        
+        return [male, female]  #zwróci subjecty ze zmieszanymi rodzicami
+
+    def createChildren(self, rodzice, cuts=1):  #Krzyżowanie
         children=[]
+        for i in range(int(niu/2)):
+            male=rodzice[2*i]
+            female=rodzice[2*i+1]
+            [male, female] = self.cross(male,female,cuts=cuts)
+            children.append(male)
+            children.append(female)
 
         self.children = children
 
@@ -95,12 +128,22 @@ class population:
 family = population()
 
 
-#TESTOWANIE ROZNOSCI
-ziomus = subject()
-print(ziomus.array)
-ziomus.updateMatrix()
-print(ziomus.matrix)
-ziomus.rotatedMatrix()
-print(ziomus.transposedMatrix)
-ziomus.calculateError()
-print("Error ziomusia to:", ziomus.error)
+
+family.createChildren(family.findMales())
+
+for i in family.children:
+        print("Kolejna macierz")
+        print(i.matrix)
+
+rodzice=family.findMales()
+# for i in rodzice:
+#     print("Kolejna macierz")
+#     print(i.matrix)
+
+# #TESTOWANIE ROZNOSCI
+# ziomus = subject()
+# print(ziomus.array)
+# ziomus.updateMatrix()
+# print(ziomus.matrix)
+# ziomus.calculateError()
+# print("Error ziomusia to:", ziomus.error)
