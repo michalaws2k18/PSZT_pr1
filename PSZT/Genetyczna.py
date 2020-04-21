@@ -2,11 +2,12 @@ import numpy as np
 from numpy import random
 import copy 
 
-niu = 20  # number of parents
+niu = 100  # number of parents
 
-N = 3
+N = 4
 length = N*N
-
+crossRate=0.7
+mutateRate=0.7
 
 def tossACoinToYourWitcher():
     return random.randint(2)
@@ -17,10 +18,10 @@ def referenceFunction():
 
 
 def error(vector):
-    # return abs(np.sum(vector) - N*(1+N*N)/2)  #funkcja obliczająca wielkość błędu
-    if sum(vector) == referenceFunction():
-        return 0
-    return 1
+    return abs(np.sum(vector) - N*(1+N*N)/2)  #funkcja obliczająca wielkość błędu
+    # if sum(vector) == referenceFunction():
+    #     return 0
+    # return 1
 
 
 def error2Prob(a):          # funkcja zmieniająca wielkość błędu na wagę bycia wybranym
@@ -58,39 +59,33 @@ class Subject:
 class Population:
     def __init__(self):
         self.parents = []
-        self.children = []*niu*10
-        for i in range(niu*10):
+        self.children = []*niu
+        for i in range(niu*30):
             self.parents.append(Subject())
         self.calculateAllErrors()
+
+    def updateAllMatrix(self):
+        for x in self.parents:
+            x.updateMatrix()
+        for x in self.children:
+            x.updateMatrix()
 
     def calculateAllErrors(self):
         for x in self.parents:
             x.calculateError()
 
-    def findMales(self):                # wybieramy meskich rodzicow dla dzieci, Stworzy niu Male'ów
-        self.calculateAllErrors()
-        probabilities = []
-        prob_sum = 0
-        for x in self.parents:
-            prob_sum += error2Prob(x.error)
-        for x in self.parents:
-            probabilities.append(error2Prob(x.error)/prob_sum)
-
-        maleVector = np.random.choice(self.parents, size=niu, replace=False, p=probabilities)
-        return maleVector
-
-    def createChildren(self, rodzice, cuts=3):  # Krzyżowanie
+    def createChildren(self, rodzice, cuts=2):  # Krzyżowanie
         children = []
         for i in range(int(niu/2)):
-            male = rodzice[2*i]
-            female = rodzice[2*i+1]
+            male = copy.deepcopy(rodzice[2*i])
+            female = copy.deepcopy(rodzice[2*i+1])
             [boy, girl] = self.mycross(male, female, cuts=cuts)
             children.append(boy)
             children.append(girl)
         self.children = children
         self.mutation()
 
-    def mycross(self, male, female, cuts):
+    def mycross(self, male, female, cuts = 2):
         itsBoy = copy.deepcopy(male)
         itsGirl = copy.deepcopy(female)
         allCutPlaces = np.arange(start=1, stop=length-2)
@@ -99,7 +94,8 @@ class Population:
         chosenCutPlaces.append(len(male.array)-1)
         chosenCutPlaces.sort()  # domyslnie rosnąco
         for i in range(len(chosenCutPlaces)-1):
-            do_i_change = random.randint(0, 2)
+            #do_i_change = random.randint(0, 2)
+            do_i_change = random.choice([0,1], size= 1,p=[1-crossRate, crossRate])
             if (do_i_change == 1):
                 bufor = itsBoy.array[chosenCutPlaces[i]:chosenCutPlaces[i+1]]
                 for j in range(chosenCutPlaces[i], chosenCutPlaces[i+1]):
@@ -129,7 +125,8 @@ class Population:
 
     def mutation(self):
         for item in self.children:
-            if(random.randint(0, 1) == 0):
+            #if(random.randint(0, 1) == 0):
+            if (random.choice([0,1], size= 1,p=[1-mutateRate, mutateRate]) == 1):
                 first_to_change = random.randint(0, len(item.array))
                 second_to_change = random.randint(0, len(item.array))
                 self.swap(item.array, first_to_change, second_to_change)
@@ -140,16 +137,17 @@ class Population:
         for item1 in self.children:
             yes_or_not = True
             for item2 in self.parents:
-                for iter in range(len(item1.array)):
-                    if item1.array[iter]!=item2.array[iter]:
-                        yes_or_not = False
-                        break
-            if yes_or_not is False:
+                if item1.array==item2.array:
+                    yes_or_not=False
+                # for iter in range(len(item1.array)):
+                #     if item1.array[iter]!=item2.array[iter]:
+                #         yes_or_not = False
+                #         break
+            if yes_or_not is True:
                 self.parents.append(item1)
             else:
                 pass
-        self.calculateAllErrors()
+        #self.calculateAllErrors()
     
     def minimize_parents(self, chosen):
         self.parents = chosen
-
