@@ -2,7 +2,7 @@ import numpy as np
 from numpy import random
 import copy 
 
-niu = 10  # number of parents
+niu = 20  # number of parents
 
 N = 3
 length = N*N
@@ -58,8 +58,8 @@ class Subject:
 class Population:
     def __init__(self):
         self.parents = []
-        self.children = []*niu
-        for i in range(niu):
+        self.children = []*niu*10
+        for i in range(niu*10):
             self.parents.append(Subject())
         self.calculateAllErrors()
 
@@ -79,7 +79,7 @@ class Population:
         maleVector = np.random.choice(self.parents, size=niu, replace=False, p=probabilities)
         return maleVector
 
-    def createChildren(self, rodzice, cuts=2):  # Krzyżowanie
+    def createChildren(self, rodzice, cuts=3):  # Krzyżowanie
         children = []
         for i in range(int(niu/2)):
             male = rodzice[2*i]
@@ -124,7 +124,7 @@ class Population:
 
     def take_the_best(self, number):
         self.calculateAllErrors()
-        self.parents.sort(key = lambda x: x.error, reverse=True)
+        self.parents.sort(key = lambda x: x.error, reverse=False)
         return self.parents[0:number]
 
     def mutation(self):
@@ -152,3 +152,4 @@ class Population:
     
     def minimize_parents(self, chosen):
         self.parents = chosen
+
