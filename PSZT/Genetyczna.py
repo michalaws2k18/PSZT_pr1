@@ -79,45 +79,6 @@ class Population:
         maleVector = np.random.choice(self.parents, size=niu, replace=False, p=probabilities)
         return maleVector
 
-    # def findFemales(self, maleVector):
-    #     femaleVector = []
-    #     for x in maleVector:
-    #         differenceMeasure = []
-    #         for y in self.parents:          #bedziemy wybierać 1 partnerke dla każdego Male'a
-    #             differenceMeasure.append(sum(np.absolute(x.array - y.array))
-    #             weights = diff2Prob(differenceMeasure)
-    #             probabilitiesOfFemale = weights/sum(weights)
-    #         femaleVector.append(np.random.choice(self.parents, p=probabilitiesOfFemale))
-
-    #     return femaleVector
-
-    def cross(self, male, female, cuts=2):  # Krzyżuje jedną parę
-        itsGirl = []
-        itsBoy = []
-        allCutPlaces = np.arange(start=1, stop=length)
-        chosenCutPlaces = np.random.choice(allCutPlaces, size=cuts, replace=False)
-        chosenCutPlaces.sort()  # domyslnie rosnąco
-
-        for i in range(cuts):
-            if i == 0:
-                if tossACoinToYourWitcher == 0:
-                    itsGirl += female.array[0:chosenCutPlaces[i]]
-                    itsBoy += male.array[0:chosenCutPlaces[i]]
-                else:
-                    itsGirl += male.array[0:chosenCutPlaces[i]]
-                    itsBoy += female.array[0:chosenCutPlaces[i]]
-            else:
-                if tossACoinToYourWitcher == 0:
-                    itsGirl += female.array[chosenCutPlaces[i-1]:chosenCutPlaces[i]]
-                    itsBoy += male.array[chosenCutPlaces[i-1]:chosenCutPlaces[i]]
-                else:
-                    itsGirl += male.array[chosenCutPlaces[i-1]:chosenCutPlaces[i]]
-                    itsBoy += female.array[chosenCutPlaces[i-1]:chosenCutPlaces[i]]
-
-        male.array = itsBoy
-        female.array = itsGirl
-        return [male, female]  # zwróci subjecty ze zmieszanymi rodzicami
-
     def createChildren(self, rodzice, cuts=2):  # Krzyżowanie
         children = []
         for i in range(int(niu/2)):
@@ -191,16 +152,3 @@ class Population:
     
     def minimize_parents(self, chosen):
         self.parents = chosen
-
-
-# for i in rodzice:
-#     print("Kolejna macierz")
-#     print(i.matrix)
-
-# #TESTOWANIE ROZNOSCI
-# ziomus = subject()
-# print(ziomus.array)
-# ziomus.updateMatrix()
-# print(ziomus.matrix)
-# ziomus.calculateError()
-# print("Error ziomusia to:", ziomus.error)
