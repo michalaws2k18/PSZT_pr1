@@ -1,9 +1,10 @@
 import numpy as np
 from numpy import random
+import copy 
 
 niu = 10  # number of parents
 
-N = 4
+N = 3
 length = N*N
 
 
@@ -18,12 +19,12 @@ def referenceFunction():
 def error(vector):
     # return abs(np.sum(vector) - N*(1+N*N)/2)  #funkcja obliczająca wielkość błędu
     if sum(vector) == referenceFunction():
-        return 1
-    return 0
+        return 0
+    return 1
 
 
 def error2Prob(a):          # funkcja zmieniająca wielkość błędu na wagę bycia wybranym
-    return np.exp(a)       # TO NALEZY USTALIC !!! od tego zależy siła selekcji
+    return np.exp(-a)       # TO NALEZY USTALIC !!! od tego zależy siła selekcji
 
 
 class Subject:
@@ -75,7 +76,7 @@ class Population:
         for x in self.parents:
             probabilities.append(error2Prob(x.error)/prob_sum)
 
-        maleVector = np.random.choice(self.parents, size=niu, p=probabilities)
+        maleVector = np.random.choice(self.parents, size=niu, replace=False, p=probabilities)
         return maleVector
 
     # def findFemales(self, maleVector):
@@ -129,8 +130,8 @@ class Population:
         self.mutation()
 
     def mycross(self, male, female, cuts):
-        itsBoy = male
-        itsGirl = female
+        itsBoy = copy.deepcopy(male)
+        itsGirl = copy.deepcopy(female)
         allCutPlaces = np.arange(start=1, stop=length-2)
         chosenCutPlaces = list(np.random.choice(allCutPlaces, size=cuts, replace=False))
         chosenCutPlaces.append(0)
@@ -167,13 +168,13 @@ class Population:
 
     def mutation(self):
         for item in self.children:
-            if(random.randint(0, 2) == 1):
+            if(random.randint(0, 1) == 0):
                 first_to_change = random.randint(0, len(item.array))
                 second_to_change = random.randint(0, len(item.array))
                 self.swap(item.array, first_to_change, second_to_change)
             else:
                 pass
-            
+    
     def update_parents(self):
         for item1 in self.children:
             yes_or_not = True
