@@ -1,4 +1,5 @@
-from Genetyczna import Population, Subject
+from Genetyczna import Population, Subject, niu
+import time
 
 if __name__ == '__main__':
     family = Population()
@@ -11,57 +12,84 @@ if __name__ == '__main__':
     #     print(item.array)
     # family.update_parents()
     # print(len(family.parents))
+
+
     """
     Piersza opcja wyboru najlepszych przez sortowanie
     """
+    start = time.perf_counter()
     iter = 0
-    # candidate = family.take_the_best(1)
-    while iter < 10000:
-        chosen = family.take_the_best(20)
+    family.updateAllMatrix()
+    suma_1 = 0
+    suma_2 = 0
+    suma_3 = 0
+    suma_4 = 0
+    suma_5 = 0
+    suma_6 = 0
+    suma_7 = 0
+    while iter < 1500:
+        tic=time.perf_counter()
+        chosen = family.take_the_best(niu)
+        toc=time.perf_counter()
+        suma_1 += (toc-tic)
+        
+        tic=time.perf_counter()
         family.createChildren(chosen)
+        toc=time.perf_counter()
+        suma_2 += (toc-tic)
+
+        tic=time.perf_counter()
         family.minimize_parents(chosen)
+        toc=time.perf_counter()
+        suma_3 += (toc-tic)
+
+        tic=time.perf_counter()
         family.update_parents()
+        toc=time.perf_counter()
+        suma_4 += (toc-tic)
+
+        tic=time.perf_counter()
+        family.updateAllMatrix()
+        toc=time.perf_counter()
+        suma_5 += (toc-tic)
+
+        tic=time.perf_counter()
         candidate = family.take_the_best(1)
-        if candidate[0].error <= 2:
+        toc=time.perf_counter()
+        suma_6 += (toc-tic)
+
+        tic=time.perf_counter()
+        if candidate[0].error == 0:
             break
+        toc=time.perf_counter()
+        suma_7 += (toc-tic)
+        if iter % 100 == 0:
+            print(f"Po {iter} iteracjach:")
+            print(f"czas wykonania take_the_best({niu}) wynosi {suma_1:0.4f} seconds")
+            print(f"czas wykonania createChildren wynosi {suma_2:0.4f} seconds")
+            print(f"czas wykonania minimize_parents wynosi {suma_3:0.4f} seconds")
+            print(f"czas wykonania update_parents() wynosi {suma_4:0.4f} seconds")
+            print(f"czas wykonania upadateAllMatrix wynosi {suma_5:0.4f} seconds")
+            print(f"czas wykonania take_the_best(1) wynosi {suma_6:0.4f} seconds")
+            print(f"czas wykonania sprawdzenia czy najlepszy jest ostateczny wynosi {suma_7:0.4f} seconds")
+            print(f"\n\n")
         iter += 1
+        
+    stop = time.perf_counter()
+    print(f"\n\n\n")
+    print(f"Całkowity czas : {stop-start :0.4f} sec")
+    print(f"W tym:")
+    print(f"czas wykonania take_the_best({niu}) wynosi {suma_1:0.4f} seconds")
+    print(f"czas wykonania createChildren wynosi {suma_2:0.4f} seconds")
+    print(f"czas wykonania minimize_parents wynosi {suma_3:0.4f} seconds")
+    print(f"czas wykonania update_parents() wynosi {suma_4:0.4f} seconds")
+    print(f"czas wykonania upadateAllMatrix wynosi {suma_5:0.4f} seconds")
+    print(f"czas wykonania take_the_best(1) wynosi {suma_6:0.4f} seconds")
+    print(f"czas wykonania sprawdzenia czy najlepszy jest ostateczny wynosi {suma_7:0.4f} seconds")
     print("Final results\n\n\n")
-    candidate[0].updateMatrix
     print(candidate[0].matrix)
     print(candidate[0].error)
     print(f"zajelo to {iter} iteracji")
     """
     Druga opcja z wyborem najlepszych
     """
-    # iter = 0
-    # candidate = family.take_the_best(1)
-    # while iter < 100:
-    #     family.createChildren(family.findMales())
-    #     chosen = family.take_the_best(20)
-    #     family.minimize_parents(chosen)
-    #     family.update_parents()
-    #     candidate = family.take_the_best(1)
-    #     if candidate[0].error == 0:
-    #         break
-    #     iter += 1
-    # print("Final results\n\n\n")
-    # candidate[0].updateMatrix
-    # print(candidate[0].matrix)
-    # print(candidate[0].error)
-    # print(f"zajelo to {iter} iteracji")
-
-
-    # for i in family.children:
-    #     print("Kolejna macierz")
-    #     print(i.matrix)
-    # rodzice = family.findMales()
-    # moje proby
-
-    # macierz = Subject()
-    # print(type(macierz.array))
-    # print("\n\n\n")
-    # print(macierz.matrix)
-    # print(macierz.array)
-    # print(macierz.error)
-    # for i in range(1):
-    #     print(i)
