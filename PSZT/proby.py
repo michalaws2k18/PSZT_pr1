@@ -16,13 +16,13 @@ if __name__ == '__main__':
     """
     iter = 0
     # candidate = family.take_the_best(1)
-    while iter < 1000:
-        chosen = family.take_the_best(10)
+    while iter < 10000:
+        chosen = family.take_the_best(20)
         family.createChildren(chosen)
         family.minimize_parents(chosen)
         family.update_parents()
         candidate = family.take_the_best(1)
-        if candidate[0].error == 0:
+        if candidate[0].error <= 2:
             break
         iter += 1
     print("Final results\n\n\n")
@@ -49,6 +49,8 @@ if __name__ == '__main__':
     # print(candidate[0].matrix)
     # print(candidate[0].error)
     # print(f"zajelo to {iter} iteracji")
+
+
     # for i in family.children:
     #     print("Kolejna macierz")
     #     print(i.matrix)
