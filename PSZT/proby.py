@@ -3,16 +3,6 @@ import time
 
 if __name__ == '__main__':
     family = Population()
-    print(family.parents[0].error)
-    # print(len(family.parents))
-    # family.createChildren(family.take_the_best(10))
-    # for item in family.parents:
-    #     print(item.array)
-    # for item in (family.children):
-    #     print(item.array)
-    # family.update_parents()
-    # print(len(family.parents))
-
 
     """
     Piersza opcja wyboru najlepszych przez sortowanie
@@ -28,6 +18,8 @@ if __name__ == '__main__':
     suma_6 = 0
     suma_7 = 0
     
+    family.parents = family.take_the_best(niu)
+    print(f"Poczatkowy blad wynosi {family.parents[0].error}")
     while iter < 3000:
         # tic=time.perf_counter()
         # chosen = family.parents
@@ -74,6 +66,7 @@ if __name__ == '__main__':
             print(f"czas wykonania upadateAllMatrix wynosi {suma_5:0.4f} seconds")
             print(f"czas wykonania take_the_best(1) wynosi {suma_6:0.4f} seconds")
             print(f"czas wykonania sprawdzenia czy najlepszy jest ostateczny wynosi {suma_7:0.4f} seconds")
+            print(f"Aktualny blad wynosi {family.parents[0].error}")
             print(f"\n\n")
         iter += 1
         
