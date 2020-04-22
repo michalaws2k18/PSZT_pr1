@@ -2,16 +2,12 @@ import numpy as np
 from numpy import random
 import copy 
 
-niu = 100  # number of parents
+niu = 200  # number of parents
 
-N = 4
+N = 5
 length = N*N
 crossRate=0.7
 mutateRate=0.7
-
-def tossACoinToYourWitcher():
-    return random.randint(2)
-
 
 def referenceFunction():
     return N*(1+N*N)/2
@@ -60,7 +56,7 @@ class Population:
     def __init__(self):
         self.parents = []
         self.children = []*niu
-        for i in range(niu*30):
+        for i in range(niu):
             self.parents.append(Subject())
         self.calculateAllErrors()
 
@@ -121,7 +117,7 @@ class Population:
     def take_the_best(self, number):
         self.calculateAllErrors()
         self.parents.sort(key = lambda x: x.error, reverse=False)
-        return self.parents[0:number]
+        return copy.deepcopy(self.parents[0:number])
 
     def mutation(self):
         for item in self.children:
