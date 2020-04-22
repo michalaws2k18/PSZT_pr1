@@ -27,21 +27,22 @@ if __name__ == '__main__':
     suma_5 = 0
     suma_6 = 0
     suma_7 = 0
-    while iter < 1500:
-        tic=time.perf_counter()
-        chosen = family.take_the_best(niu)
-        toc=time.perf_counter()
-        suma_1 += (toc-tic)
+    
+    while iter < 3000:
+        # tic=time.perf_counter()
+        # chosen = family.parents
+        # toc=time.perf_counter()
+        # suma_1 += (toc-tic)
         
         tic=time.perf_counter()
-        family.createChildren(chosen)
+        family.createChildren(family.parents)
         toc=time.perf_counter()
         suma_2 += (toc-tic)
 
-        tic=time.perf_counter()
-        family.minimize_parents(chosen)
-        toc=time.perf_counter()
-        suma_3 += (toc-tic)
+        # tic=time.perf_counter()
+        # family.minimize_parents(family.parents)
+        # toc=time.perf_counter()
+        # suma_3 += (toc-tic)
 
         tic=time.perf_counter()
         family.update_parents()
@@ -54,12 +55,13 @@ if __name__ == '__main__':
         suma_5 += (toc-tic)
 
         tic=time.perf_counter()
-        candidate = family.take_the_best(1)
+        #candidate = family.take_the_best(1)
+        family.parents = family.take_the_best(niu)
         toc=time.perf_counter()
         suma_6 += (toc-tic)
 
         tic=time.perf_counter()
-        if candidate[0].error == 0:
+        if family.parents[0].error == 0:
             break
         toc=time.perf_counter()
         suma_7 += (toc-tic)
@@ -87,8 +89,8 @@ if __name__ == '__main__':
     print(f"czas wykonania take_the_best(1) wynosi {suma_6:0.4f} seconds")
     print(f"czas wykonania sprawdzenia czy najlepszy jest ostateczny wynosi {suma_7:0.4f} seconds")
     print("Final results\n\n\n")
-    print(candidate[0].matrix)
-    print(candidate[0].error)
+    print(family.parents[0].matrix)
+    print(family.parents[0].error)
     print(f"zajelo to {iter} iteracji")
     """
     Druga opcja z wyborem najlepszych
