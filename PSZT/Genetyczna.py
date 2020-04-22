@@ -4,7 +4,7 @@ import copy
 
 niu = 200  # number of parents
 
-N = 5
+N = 6
 length = N*N
 crossRate=0.7
 mutateRate=0.7
@@ -56,7 +56,7 @@ class Population:
     def __init__(self):
         self.parents = []
         self.children = []*niu
-        for i in range(niu):
+        for i in range(niu*30):
             self.parents.append(Subject())
         self.calculateAllErrors()
 
