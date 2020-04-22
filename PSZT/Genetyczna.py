@@ -4,7 +4,8 @@ import copy
 
 niu = 200  # number of parents
 
-N = 6
+initialPopParameter = 50 #krotnosc wstepnego zwiekszenia poplacji poczatkowej
+N = 4
 length = N*N
 crossRate=0.7
 mutateRate=0.7
@@ -56,7 +57,7 @@ class Population:
     def __init__(self):
         self.parents = []
         self.children = []*niu
-        for i in range(niu*30):
+        for i in range(niu*initialPopParameter):
             self.parents.append(Subject())
         self.calculateAllErrors()
 
