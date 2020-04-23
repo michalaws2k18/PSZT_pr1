@@ -1,0 +1,5 @@
+10 #niu_rate
+50 #InitialPopParameter 
+0.7 #cross_rate
+0.9 #mutate_rate
+1 #number_of_mutations
